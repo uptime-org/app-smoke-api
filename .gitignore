@@ -1,0 +1,16 @@
+# Sensitive files and directories
+.ssh/
+.swiggit.json
+.env
+.env copy
+
+# CI test reports
+ci-test/reports/
+!ci-test/reports/.gitkeep
+# Environment variables and secrets
+*.env
+.env.local
+.env.production
+.env.staging
+secrets/
+config/secrets/

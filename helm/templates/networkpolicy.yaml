@@ -1,0 +1,87 @@
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "service.fullname" . }}-netpol
+  labels:
+    {{- include "service.labels" . | nindent 4 }}
+  namespace: {{ .Values.global.namespace | default .Release.Namespace }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "service.selectorLabels" . | nindent 6 }}
+  policyTypes:
+  - Ingress
+  - Egress
+  
+  ingress:
+  # Allow ingress from services that depend on this service
+  {{- if .Values.networkPolicy.allowIngressFrom }}
+  {{- range .Values.networkPolicy.allowIngressFrom }}
+  - from:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: {{ .service }}
+    ports:
+    - protocol: TCP
+      port: {{ $.Values.service.targetPort }}
+  {{- end }}
+  {{- end }}
+  
+  # Allow ingress from ingress controllers
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-system
+    ports:
+    - protocol: TCP
+      port: {{ .Values.service.targetPort }}
+  
+  # Allow ingress from same namespace for service discovery
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: {{ .Values.global.namespace | default .Release.Namespace }}
+    ports:
+    - protocol: TCP
+      port: {{ .Values.service.targetPort }}
+
+  egress:
+  # Allow egress to dependencies
+  {{- if .Values.dependencies }}
+  {{- range .Values.dependencies }}
+  - to:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: {{ .name }}
+    ports:
+    - protocol: TCP
+      port: {{ .port | default 59Values.service.targetPort }}
+  {{- end }}
+  {{- end }}
+  
+  # Allow DNS resolution
+  - to: []
+    ports:
+    - protocol: UDP
+      port: 53
+    - protocol: TCP  
+      port: 53
+  
+  # Allow egress to external services (internet)
+  {{- if .Values.networkPolicy.allowExternalEgress }}
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 80
+    - protocol: TCP
+      port: 443
+  {{- end }}
+  
+  # Allow health check endpoints
+  - to:
+    - podSelector: {}
+    ports:
+    - protocol: TCP
+      port: {{ .Values.service.targetPort }}
+{{- end }}

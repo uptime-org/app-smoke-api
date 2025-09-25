@@ -1,0 +1,63 @@
+# Local environment overrides for values.yaml
+
+# Environment-specific settings
+environment: local
+debug: true
+
+# Local resource limits (smaller for dev)
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+
+# Local replica count
+replicaCount: 1
+
+# Local image settings
+image:
+  tag: latest
+  pullPolicy: Never  # Use local images
+
+# Local service configuration
+service:
+  type: NodePort
+  nodePort: 30{{TIER_PORT_OFFSET}}01
+
+# Local database connection
+database:
+  host: host.docker.internal
+  port: 5432
+  name: "{{ECO_NAME}}_local"
+
+# App feature flags (local environment)
+features:
+  debug_enabled: true
+  analytics_enabled: false  # Disable analytics in local
+  caching_enabled: true
+
+# Auth-specific features (if auth service)
+connectors:
+  local_enabled: true
+  github_enabled: false     # Simpler for local dev
+
+# Billing features (if billing service)
+billing:
+  subscriptions_enabled: true
+  usage_tracking_enabled: false  # Skip tracking locally
+  invoicing_enabled: false       # No invoicing locally
+
+# Notification features (if notifications service)
+notifications:
+  email_enabled: false      # No emails locally
+  sms_enabled: false
+  push_enabled: false
+  webhooks_enabled: true     # Keep webhooks for testing
+
+# Events features (if events service)
+events:
+  streaming_enabled: true
+  webhooks_enabled: true
+  audit_logging_enabled: false  # Skip audit logs locally
