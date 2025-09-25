@@ -30,7 +30,7 @@ service:
 database:
   host: host.docker.internal
   port: 5432
-  name: "{{ECO_NAME}}_local"
+  name: "gx-smoke_local"
 
 # App feature flags (local environment)
 features:
