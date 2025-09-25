@@ -6,8 +6,8 @@ metadata:
   namespace: {{ include "service.namespace" . }}
   labels:
     app.kubernetes.io/name: {{ .Values.service.name }}
-    app.kubernetes.io/instance: {{ .Values.service.name }}-{{ .Values.env }}
-    app.kubernetes.io/environment: {{ .Values.env }}
+    app.kubernetes.io/instance: {{ .Values.service.name }}-{{ .Values.eco.namespace }}
+    app.kubernetes.io/environment: {{ .Values.eco.namespace }}
 spec:
   {{- if .Values.podDisruptionBudget.minAvailable }}
   minAvailable: {{ .Values.podDisruptionBudget.minAvailable }}
@@ -18,5 +18,5 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ .Values.service.name }}
-      app.kubernetes.io/instance: {{ .Values.service.name }}-{{ .Values.env }}
+      app.kubernetes.io/instance: {{ .Values.service.name }}-{{ .Values.eco.namespace }}
 {{- end }}
