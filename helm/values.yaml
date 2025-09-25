@@ -135,7 +135,8 @@ istio:
 
 # Base dependency configuration - templated URLs work for dev/stage/prod
 # Only local infra services need override for east-west discovery
-dependencies: []
+dependencies:
+{{DEPENDENCIES_YAML}}
 # Template will populate with dependency structures based on config
 
 # Environment-specific overrides placeholder
