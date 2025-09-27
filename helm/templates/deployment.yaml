@@ -66,7 +66,7 @@ spec:
             - name: SERVICE_WORKLOAD
               value: app
             - name: DNS_DOMAINS
-              value: "    - "api""
+              value: {{ .Values.dns.domains | join "," | quote }}
           {{- if or .Values.secrets.enabled .Values.dependencies }}
           envFrom:
             {{- if .Values.secrets.enabled }}
